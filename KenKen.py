@@ -187,15 +187,19 @@ def AC3(listNumber):
             v1 = i[2]
             v2 = i[3]
             if op == '+':
-                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == int(pr)))
-                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == int(pr)))
+                tempPr = int(pr)
+                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == tempPr))
+                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == tempPr))
             if op == '-':
+                tempPr = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: abs(x-y) == int(pr)))
                 constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: abs(x-y) == int(pr)))
             elif op == '/':
+                tempPr = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x/y == int(pr) or y/x == int(pr)))
                 constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x/y == int(pr) or y/x == int(pr)))
             elif op == '*':
+                tempPr = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x*y == int(pr)))
                 constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x*y == int(pr)))
     #loopCount = 0
