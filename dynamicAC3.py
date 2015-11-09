@@ -185,15 +185,12 @@ def Revise( bc, variables ):
         for y in dom2:
             if(bc.func(x,y) == True):
 
-                print("got here")
                 shouldKeep = True
         #print(len(dom2))
         if (shouldKeep == False):
-            print('shouldKeep:', shouldKeep)
-            print('removing', x)
             bc.var1.domain.remove(x)
         else:
-            print("kept", x)
+            pass
             #print("REMOVING: " + str(x))
             #printDomains(variables)
 
@@ -234,12 +231,12 @@ def nodeConsistent( uc ):
         if ( False == uc.func(x) ):
             uc.var.domain.remove(x)
 
-def printDomains( vars, n=4 ):
+def printDomains( vars, size):
     count = 0
     for k in sorted(vars.keys()):
         print( k,'{',vars[k].domain,'}, ',end="" )
         count = count+1
-        if ( 0 == count % n ):
+        if ( 0 == count % size ):
             print(' ')
 
 
@@ -258,59 +255,19 @@ def AC3(listNumber):
     size = int(data[0][0])
     setUpKenKen( variables, constraints, size)
 
-    #print("initial domains \n")
-    #printDomains( variables )
+    print("initial domains \n")
+    printDomains( variables,size )
 
-
-    # for i in data[1:]:
-    #     if(len(i) == 4):
-    #         pr = i[0]
-    #         print(pr)
-    #         op = i[1]
-    #         v1 = i[2]
-    #         print(v1)
-    #         v2 = i[3]
-    #         print(v2)
-    #         if op == '+':
-    #            print(v1, v2)
-    #            print(variables[v1], variables[v2])
-    #            constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == int(pr)))
-    #            constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == int(pr)))
-    #         elif op == '-':
-    #             constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: abs(x-y) == int(pr)))
-    #             constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: abs(x-y) == int(pr)))
-    #         elif op == '/':
-    #             constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x/y == int(pr) or y/x == int(pr)))
-    #             constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x/y == int(pr) or y/x == int(pr)))
-    #         if op == '*':
-    #              constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x*y == int(pr)))
-    #              #print('pr', int(pr))
-    #              constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x*y == int(pr)))
-
-   #  nodeConsistent( UnaryConstraint( variables['B3'], lambda x: x==1 ) )
-   #  nodeConsistent( UnaryConstraint( variables['A4'], lambda x: x==2 ) )
-   #  #print("unary constraint B3\n")
-   #  #printDomains( variables )
-   #
-   # #[5,+,A3,A4],[2,/,B2,C2],[4,*,B3,C3],[2,-,C1,D1],[1,-,D2,D3]   [8,*,A1,A2,B1] [8,+,B4,C4,D4]
     for i in data[1:]:
         if(len(i) == 4):
             pr = i[0]
-            print(pr)
             op = i[1]
             v1 = i[2]
-            print(v1)
             v2 = i[3]
-            print(v2)
             if op == '+':
-               print(v1, v2)
-               print(variables[v1], variables[v2])
-               print('pr', pr)
-               print('intpr', (int(pr) - 5))
                tempPr = int(pr)
                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == tempPr and x != y))#int(pr)))
                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == tempPr and x != y))#int(pr)))
-               print('nextpr', pr)
             elif op == '-':
                 tempPr3 = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: abs(x-y) == tempPr3 and x != y))
@@ -322,129 +279,58 @@ def AC3(listNumber):
             elif op == '*':
                 tempPr2 = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x*y == tempPr2 and x != y))
-                #print('pr', int(pr))
                 constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x*y == tempPr2 and x != y))
+        elif(len(i) == 5):
+            pr = i[0]
+            op = i[1]
+            v1 = i[2]
+            v2 = i[3]
+            v3 = i[4]
+            if op == '+':
+                tempPr = int(pr)
+                constraintsTC.append( TernaryConstraint(variables [v1], variables[v3], variables[v2], lambda x,y,z: x+y+z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v1], variables[v2], variables[v3], lambda x,y,z: x+y+z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v3], variables[v1], variables[v2], lambda x,y,z: x+y+z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v3], variables[v2], variables[v1], lambda x,y,z: x+y+z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v2], variables[v1], variables[v3], lambda x,y,z: x+y+z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v2], variables[v3], variables[v1], lambda x,y,z: x+y+z == tempPr and x != y != z))
+            elif op == '*':
+                tempPr = int(pr)
+                constraintsTC.append( TernaryConstraint(variables [v1], variables[v3], variables[v2], lambda x,y,z: x*y*z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v1], variables[v2], variables[v3], lambda x,y,z: x*y*z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v3], variables[v1], variables[v2], lambda x,y,z: x*y*z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v3], variables[v2], variables[v1], lambda x,y,z: x*y*z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v2], variables[v1], variables[v3], lambda x,y,z: x*y*z == tempPr and x != y != z))
+                constraintsTC.append( TernaryConstraint(variables [v2], variables[v3], variables[v1], lambda x,y,z: x*y*z == tempPr and x != y != z))
 
-    #constraints.append( BinaryConstraint( variables['A3'], variables['A4'], lambda x,y: x+y == 5 ) )
-    #constraints.append( BinaryConstraint( variables['A4'], variables['A3'], lambda x,y: x+y == 5 ) )
-    #constraints.append( BinaryConstraint( variables['B2'], variables['C2'], lambda x,y: x/y == 2 or y/x == 2) )
-    #constraints.append( BinaryConstraint( variables['C2'], variables['B2'], lambda x,y: x/y == 2 or y/x == 2) )
-    #constraints.append( BinaryConstraint( variables['B3'], variables['C3'], lambda x,y: x*y == 4 and x != y) )
-    #constraints.append( BinaryConstraint( variables['C3'], variables['B3'], lambda x,y: x*y == 4 and x != y) )
-    #constraints.append( BinaryConstraint( variables['C1'], variables['D1'], lambda x,y: abs(x-y) == 2 ) )
-    #constraints.append( BinaryConstraint( variables['D1'], variables['C1'], lambda x,y: abs(x-y) == 2 ) )
-    #constraints.append( BinaryConstraint( variables['D2'], variables['D3'], lambda x,y: abs(x-y) == 1 ) )
-    #constraints.append( BinaryConstraint( variables['D3'], variables['D2'], lambda x,y: abs(x-y) == 1 ) )
+
+
+
+
+    '''
     constraintsTC.append( TernaryConstraint(variables ['A1'], variables['A2'], variables['B1'], lambda x,y,z: x*y*z == 8 and x != y != z ))
     constraintsTC.append( TernaryConstraint(variables ['A1'], variables['B1'], variables['A2'], lambda x,y,z: x*y*z == 8 and x != y != z))
     constraintsTC.append( TernaryConstraint(variables ['A2'], variables['A1'], variables['B1'], lambda x,y,z: x*y*z == 8 and x != y != z))
     constraintsTC.append( TernaryConstraint(variables ['A2'], variables['B1'], variables['A1'], lambda x,y,z: x*y*z == 8 and x != y != z))
     constraintsTC.append( TernaryConstraint(variables ['B1'], variables['A1'], variables['A2'], lambda x,y,z: x*y*z == 8 and x != y != z))
     constraintsTC.append( TernaryConstraint(variables ['B1'], variables['A2'], variables['A1'], lambda x,y,z: x*y*z == 8 and x != y != z))
-
-
-    # #[8,+,B4,C4,D4]
-    # constraintsTC.append( TernaryConstraint(variables ['B4'], variables['C4'], variables['D4'], lambda x,y,z: x+y+z == 8))
-    # constraintsTC.append( TernaryConstraint(variables ['B4'], variables['D4'], variables['C4'], lambda x,y,z: x+y+z == 8))
-    # constraintsTC.append( TernaryConstraint(variables ['C4'], variables['B4'], variables['D4'], lambda x,y,z: x+y+z == 8))
-    # constraintsTC.append( TernaryConstraint(variables ['C4'], variables['D4'], variables['B4'], lambda x,y,z: x+y+z == 8))
-    # constraintsTC.append( TernaryConstraint(variables ['D4'], variables['B4'], variables['C4'], lambda x,y,z: x+y+z == 8))
-    # constraintsTC.append( TernaryConstraint(variables ['D4'], variables['C4'], variables['B4'], lambda x,y,z: x+y+z == 8))
-
-    #
-    # # nodeConsistent( UnaryConstraint( variables['A3'], lambda x: x==2 ) )
-    # # print("unary constraint A3\n")
-    # # printDomains( variables )
-    # #
-    # # ######          FILL IN REST OF BINARY CONSTRAINTS. NOTE that they need to be reciprocal A!=B, as well as B!=A
-    # # constraints.append( BinaryConstraint( variables['A1'], variables['A2'], lambda x,y: abs(x-y) == 2 ) )
-    # # constraints.append( BinaryConstraint( variables['A2'], variables['A1'], lambda x,y: abs(x-y) == 2 ) )
-    # # constraints.append( BinaryConstraint( variables['B1'], variables['C1'], lambda x,y: x/y == 2 or y/x == 2) )      # Constraint 2
-    # # constraints.append( BinaryConstraint( variables['C1'], variables['B1'], lambda x,y: x/y == 2 or y/x == 2) )
-    # # constraints.append( BinaryConstraint( variables['B2'], variables['B3'], lambda x,y: x/y == 3 or y/x == 3) )      # Constraint 3
-    # # constraints.append( BinaryConstraint( variables['B3'], variables['B2'], lambda x,y: x/y == 3 or y/x == 3) )
-    # # constraints.append( BinaryConstraint( variables['C2'], variables['C3'], lambda x,y: abs(x-y) == 1 ) ) # Constraint 4
-    # # constraints.append( BinaryConstraint( variables['C3'], variables['C2'], lambda x,y: abs(x-y) == 1 ) )
-    #
-    # nodeConsistent( UnaryConstraint( variables['A1'], lambda x: x==2 ) )
-    # nodeConsistent( UnaryConstraint( variables['B3'], lambda x: x==1 ) )
-    # nodeConsistent( UnaryConstraint( variables['C3'], lambda x: x==2 ) )
-    # print("unary constraint A3\n")
-    # printDomains( variables )
-    #
-    # ######          FILL IN REST OF BINARY CONSTRAINTS. NOTE that they need to be reciprocal A!=B, as well as B!=A
-    # constraints.append( BinaryConstraint( variables['A2'], variables['A3'], lambda x,y: x+y == 4 ) )
-    # constraints.append( BinaryConstraint( variables['A3'], variables['A2'], lambda x,y: x+y == 4 ) )
-    # constraints.append( BinaryConstraint( variables['B1'], variables['C1'], lambda x,y: x+y == 4 ) )      # Constraint 2
-    # constraints.append( BinaryConstraint( variables['C1'], variables['B1'], lambda x,y: x+y == 4 ) )
-    # constraints.append( BinaryConstraint( variables['B2'], variables['C2'], lambda x,y: abs(x-y) == 1) )      # Constraint 3
-    # constraints.append( BinaryConstraint( variables['C2'], variables['B2'], lambda x,y: abs(x-y) == 1) )
-    # #constraints.append( BinaryConstraint( variables['B3'], variables['C3'], lambda x,y: x+y == 3 ) ) # Constraint 4
-    # #constraints.append( BinaryConstraint( variables['C3'], variables['B3'], lambda x,y: x+y == 3 ) )
-    #
-    #
-    #
     '''
     for c in constraints:
         Revise( c , variables)
-    print("all constraints pass 1\n")
-    printDomains( variables )
-
     for tc in constraintsTC:
         ReviseTC( tc, variables )
-    print("all constraints pass 2\n")
-    printDomains( variables )
-
-
-    for c in constraints:
-        Revise( c , variables)
-    print("all constraints pass 1\n")
-    printDomains( variables )
-
-    for tc in constraintsTC:
-        ReviseTC( tc, variables )
-    print("all constraints pass 2\n")
-    printDomains( variables )
-
-
-    for c in constraints:
-        Revise( c , variables)
-    print("all constraints pass 1\n")
-    printDomains( variables )
-
-    for tc in constraintsTC:
-        ReviseTC( tc, variables )
-    print("all constraints pass 2\n")
-    printDomains( variables )
-    '''
-    #for i in range(0,1):
-    for c in constraints:
-        Revise( c , variables)
-        for tc in constraintsTC:
-            ReviseTC( tc, variables )
-    printDomains( variables )
+    print("Final variables\n")
+    printDomains( variables,size )
 
 
 
 
-    '''
-    print('----------------------------------------------------------')
-    print('TO DO:')
-    print('1) Write the function revise().')
-    print('2) Complete the binary constraints for KenKen puzzle.')
-    print('3) Run code and confirm that all domains are reduced to single value.')
-    print('')
-    print('4) Create the variables and constraints for the sport logic puzzle.')
-    print('-- Do not hand edit the domains based on Unary constraints. Define those as part of the puzzle.')
-    print('5) Solve the puzzle using nodeConsistent() and revise().')
-
-    print(' IF you finish all of that, see if you can frame the person-animal-color puzzle for AC3')
-
-    print('NOTE, the implementation of AC3 requires a queue on which you pop a constraint, then push neighbors if necessary')
-    print('   Since this is not implemented here, you can create a "hack" by repeatedly calling Revise.')
-    print('----------------------------------------------------------')
-    print(' SUBMIT your code via TurnItIn (whatever state it is in when class is over is fine.')
-    '''
-
-print("DOING KENKEN")
-AC3(0)
+if __name__ == '__main__':
+    print("\nPuzzle1\n")
+    AC3(0)
+    print("\nPuzzle2\n")
+    AC3(1)
+    print("\nPuzzle3\n")
+    AC3(2)
+    print("\n")
+    
