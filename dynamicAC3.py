@@ -308,20 +308,22 @@ def AC3(listNumber):
                print('pr', pr)
                print('intpr', (int(pr) - 5))
                tempPr = int(pr)
-               constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == tempPr))#int(pr)))
-               constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == tempPr))#int(pr)))
+               constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == tempPr and x != y))#int(pr)))
+               constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == tempPr and x != y))#int(pr)))
                print('nextpr', pr)
             elif op == '-':
-                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: abs(x-y) == int(pr)))
-                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: abs(x-y) == int(pr)))
+                tempPr3 = int(pr)
+                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: abs(x-y) == tempPr3 and x != y))
+                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: abs(x-y) == tempPr3 and x != y))
             elif op == '/':
-                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x/y == int(pr) or y/x == int(pr)))
-                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x/y == int(pr) or y/x == int(pr)))
+                tempPr4 = int(pr)
+                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x/y == int(pr) or y/x == tempPr4 and x != y))
+                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x/y == int(pr) or y/x == tempPr4 and x != y))
             elif op == '*':
                 tempPr2 = int(pr)
-                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x*y == tempPr2))
+                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x*y == tempPr2 and x != y))
                 #print('pr', int(pr))
-                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x*y == tempPr2))
+                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x*y == tempPr2 and x != y))
 
     #constraints.append( BinaryConstraint( variables['A3'], variables['A4'], lambda x,y: x+y == 5 ) )
     #constraints.append( BinaryConstraint( variables['A4'], variables['A3'], lambda x,y: x+y == 5 ) )
@@ -418,8 +420,8 @@ def AC3(listNumber):
     #for i in range(0,1):
     for c in constraints:
         Revise( c , variables)
-        #for tc in constraintsTC:
-         #   ReviseTC( tc, variables )
+        for tc in constraintsTC:
+            ReviseTC( tc, variables )
     printDomains( variables )
 
 
