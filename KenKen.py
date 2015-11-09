@@ -74,10 +74,12 @@ def setUpKenKen( variables, constraints, size ):
     rows = rows[0:size]
     cols = cols[0:size]
 
+ 
     varNames = [ x+y for x in rows for y in cols ]
     for var in varNames:
         tempNum = ConstraintVar([x for x in range(1, size+1)], var)
         variables[var] = ConstraintVar( [x for x in range(1,size+1)],var )
+
 
     # establish the allDiff constraint for each column and each row
     # for AC3, all constraints would be added to the queue
@@ -126,7 +128,7 @@ def Revise( bc, variables ):
         if (shouldKeep == False):
             bc.var1.domain.remove(x)
             #print("REMOVING: " + str(x))
-            #printDomains(variables)
+            #printDomains(variables, 4)
 
 
 def ReviseTC( tc, variables ):
@@ -166,10 +168,9 @@ def printDomains( vars, size ):
             print(' ')
 
 def AC3(listNumber):
-
     data = readKenKen(listNumber)
-    print(data)
 
+    print(data)
     
     # create a dictionary of ConstraintVars keyed by names in VarNames.
     variables = dict()
@@ -177,6 +178,7 @@ def AC3(listNumber):
     size = int(data[0][0])
     setUpKenKen( variables, constraints, size)
 
+    
     print("initial domains \n")
     printDomains( variables,size )
 
@@ -187,9 +189,15 @@ def AC3(listNumber):
             v1 = i[2]
             v2 = i[3]
             if op == '+':
+<<<<<<< HEAD
                 tempPr = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == tempPr))
                 constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == tempPr))
+=======
+                #print("This is the binary constraint for: " + v1 + " " + v2 + " " + str(int(pr)))
+                constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: x+y == int(pr)))
+                constraints.append(BinaryConstraint(variables[v2], variables[v1], lambda x,y: x+y == int(pr)))
+>>>>>>> origin/master
             if op == '-':
                 tempPr = int(pr)
                 constraints.append(BinaryConstraint(variables[v1], variables[v2], lambda x,y: abs(x-y) == int(pr)))
@@ -209,11 +217,6 @@ def AC3(listNumber):
         #loopCount+=1
     print("After revision")
     printDomains(variables,size)
-
-
-
-
-
     '''
     nodeConsistent( UnaryConstraint( variables['A3'], lambda x: x==2 ) )
     print("unary constraint A3\n")
@@ -244,8 +247,6 @@ def AC3(listNumber):
     print("all constraints pass 3\n")
     printDomains( variables )
     '''
-
-
 
 if __name__ == "__main__":
     AC3(0)
