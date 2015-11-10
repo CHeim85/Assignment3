@@ -232,7 +232,7 @@ def makeGuess(variables, backTrackStack):
     sizeOfDomain=sys.maxsize
 
     for key in variables:
-        if len(variables[key].domain) < sizeOfDomain and len(variables[key].domain)!=1:
+        if len(variables[key].domain) < sizeOfDomain and len(variables[key].domain)!=1 and len(variables[key].domain)!=0:
             var=key
             sizeOfDomain=len(variables[key].domain)
     if var == None:
