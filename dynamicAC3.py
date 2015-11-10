@@ -1,7 +1,10 @@
 import functools
+import sys
+import copy
 from functools import reduce
 from testRead import *
 from enum import Enum
+
 
 
 class ConstraintVar:
@@ -107,7 +110,7 @@ def setUpKenKen( variables, constraints, size ):
 		# accumulate all ConstraintVars contained in column 'c'
                 aCol.append( variables[k] )
         allDiff( constraints, aCol )
-
+'''
     # for example, for cols 1,2,3 (with keys A1,B1,C1 ...) generate A1!=B1!=C1, A2!=B2 ...
     for c in cols:
         aCol = []
@@ -118,6 +121,7 @@ def setUpKenKen( variables, constraints, size ):
 		# accumulate all ConstraintVars contained in column 'c'
                 aCol.append( variables[k] )
         allDiff( constraints, aCol )
+'''
 
 
 def Revise( bc, variables ):
@@ -166,9 +170,6 @@ def ReviseTC( tc, variables ):
             #print("REMOVING: " + str(x))
             #printDomains(variables)
 
-
-
-
 #>>>>>
         # if nothing in domain of variable2 satisfies the constraint when variable1==x, remove x
 #>>>>>
@@ -195,7 +196,13 @@ def isSolved(vars):
             return 2
     return 1
 
-def makeGuess(variables, backTrackStack):
+class backtrackLog:
+    def __init__(self, variables, var, guess):
+        self.variables = copy.deepcopy(variables)
+        remainder = copy.deepcopy(self.variables[var].domain)
+        remainder.remove(guess)
+        self.variables[var] = ConstraintVar(remainder, var)
+
 
 
 def backTrackingSearch(variables, constraints, constraintsTC, size):
@@ -203,9 +210,8 @@ def backTrackingSearch(variables, constraints, constraintsTC, size):
     while isSolved(variables) != 1:
         if isSolved(variables) == 2:
             #if there are no solutions
-            print("MADE A BAD GUESS ABORTING\n")
-            printDomains(variables, size)
-            return
+            print("BACKTRACKING!!!")
+            variables = backtrack(backTrackStack, variables)
         else:
             #if there is still more to be found
             makeGuess(variables, backTrackStack)
@@ -213,6 +219,29 @@ def backTrackingSearch(variables, constraints, constraintsTC, size):
     print("problem solved\n")
     printDomains(variables, size)
 
+def backtrack(stackBT, variables):
+    if not stackBT:
+        print("No Solutions Found")
+        return []
+    else:
+        variables = stackBT.pop().variables
+        return variables
+
+def makeGuess(variables, backTrackStack):
+    var=None
+    sizeOfDomain=sys.maxsize
+
+    for key in variables:
+        if len(variables[key].domain) < sizeOfDomain and len(variables[key].domain)!=1:
+            var=key
+            sizeOfDomain=len(variables[key].domain)
+    if var == None:
+        print("This shouldn't happen!")
+        return
+    guess = variables[var].domain[0]
+    BTLog=backtrackLog(variables, var, guess)
+    backTrackStack.append(BTLog)
+    variables[var].domain=[guess]
 
 
 
@@ -288,9 +317,8 @@ def AC3(listNumber):
         print("Problem done\n")
     else:
         print("Problem not done, starting backtracking")
-        '''
         backTrackingSearch(variables, constraints, constraintsTC, size)
-        '''
+        
 
 
 
